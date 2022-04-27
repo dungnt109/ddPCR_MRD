@@ -561,7 +561,7 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 		h2o.marker <- h2o.results
 		
 		## draw figure 
-		render("C:\\Users\\paelhe\\Desktop\\ddPCR2\\ddPCR_rTemplate_report.Rmd", params = list(
+		render("./ddPCR_rTemplate_report.Rmd", params = list(
 			sid = fu.sid, 
 			mid = mid, 
 			dx.alb = dx.alb, 
@@ -581,8 +581,23 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 			output_file = paste(folder, "\\", fu.sid, "_", mid, "_", runmode, "_report.pdf", sep="")
 		)
 		## draw figure 
-		render("C:\\Users\\paelhe\\Desktop\\ddPCR2\\ddPCR_rTemplate_2dFigs.Rmd", params = list(sid = fu.sid, mid = mid, dx.alb = dx.alb, fu.alb = fu.alb, mnc.alb = mnc.alb, h2o.alb = h2o.alb, dx.marker = dx.marker, fu.marker=fu.marker, mnc.marker=mnc.marker, h2o.marker=h2o.marker, show_outliers=show_outliers, dx.baseline=dx.baseline, mnc.alb.dilutionX=mnc.alb.dilutionX, mnc.alb.concentration=mnc.alb.concentration, date=Sys.time()), 
-				output_file = paste(folder, "\\", fu.sid, "_", mid, "_", runmode, "_2dFigs.pdf", sep="")
+		render("./ddPCR_rTemplate_2dFigs.Rmd", params = list(
+			sid = fu.sid, 
+			mid = mid, 
+			dx.alb = dx.alb, 
+			fu.alb = fu.alb, 
+			mnc.alb = mnc.alb, 
+			h2o.alb = h2o.alb, 
+			dx.marker = dx.marker, 
+			fu.marker=fu.marker, 
+			mnc.marker=mnc.marker, 
+			h2o.marker=h2o.marker, 
+			show_outliers=show_outliers, 
+			dx.baseline=dx.baseline, 
+			mnc.alb.dilutionX=mnc.alb.dilutionX, 
+			mnc.alb.concentration=mnc.alb.concentration, 
+			date=Sys.time()), 
+			output_file = paste(folder, "\\", fu.sid, "_", mid, "_", runmode, "_2dFigs.pdf", sep="")
 		)
 	
 	}
