@@ -18,6 +18,7 @@ params:
   mnc.alb.dilutionX: 200
   mnc.alb.concentration: ""
   show_outliers: TRUE
+  verifier: ""
 title: "ddPCR laboratory results"
 fontsize: 10pt
 geometry: margin=1.5cm
@@ -371,7 +372,7 @@ Reported by &  &  & \\
 &&&\\
 \hline
 &&&\\
-Verified by &  &  & \\
+Verified by &  `r params$verifier`  &  & \\
 &&&\\
 \hline
 \end{tabular}
