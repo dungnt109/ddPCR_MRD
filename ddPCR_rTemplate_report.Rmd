@@ -18,6 +18,7 @@ params:
   mnc.alb.dilutionX: 200
   mnc.alb.concentration: ""
   show_outliers: TRUE
+  runType: ""
   verifier: ""
 title: "ddPCR laboratory results"
 fontsize: 10pt
@@ -297,8 +298,7 @@ writeLines(paste("Using MNC dilution factor", params$mnc.alb.dilutionX))
 
 
 
-# relatiive mrd
-relative.mrd <- absolute.mrd/dx.baseline
+
 
 # mrd in mnc
 mnc.marker.info <- get_merged_info(c(params$mnc.marker))
@@ -321,9 +321,11 @@ total.cell.no <- ceiling(fu.cell.concentration * 20 * fu.marker.info[1, "replica
 # thresholds
 ptv <- qbinom(0.9999, total.cell.no, background.level)/(20 * fu.marker.info[1, "replicates"])
 ntv <- qbinom(0.95, total.cell.no, background.level)/(20 * fu.marker.info[1, "replicates"])
-# mrd thresholds
-mrd.ptv <- (ptv/fu.cell.concentration)/dx.baseline
-mrd.ntv <- (ntv/fu.cell.concentration)/dx.baseline
+
+
+absolute.ptv <- ptv/fu.cell.concentration
+absolute.ntv <- ntv/fu.cell.concentration
+
 
 #
 mrd.call <- "NEG"
@@ -337,16 +339,78 @@ if (relative.mrd > mrd.ptv) {
 fu.marker.formatted <- sprintf("%#.3f", fu.marker.info[1, "concentration"])
 fu.alb.concentration.formatted <- sprintf("%#.3f", fu.alb.concentration)
 absolute.mrd.formatted <- formatC(absolute.mrd, format = "e", digits = 2)
-dx.baseline.formatted <- sprintf("%#.3f", dx.baseline)
+absolute.ptv.formatted <- formatC(absolute.ptv, format = "e", digits = 2)
+absolute.ntv.formatted <- formatC(absolute.ntv, format = "e", digits = 2)
 background.level.formatted <- formatC(background.level, format = "e", digits = 2)
-relative.mrd.formatted <- formatC(relative.mrd, format = "e", digits = 2)
-mrd.ntv.formatted <- formatC(mrd.ntv, format = "e", digits = 2)
-mrd.ptv.formatted <- formatC(mrd.ptv, format = "e", digits = 2)
+
+if (params$runType == "absolute") {
+
+		mrd.output.values <- c(fu.marker.formatted, 
+					   		   fu.alb.concentration.formatted, 
+					           absolute.mrd.formatted,  
+					           absolute.ntv.formatted, 
+			                   absolute.ptv.formatted, 
+					           background.level.formatted, 
+					           total.cell.no,  
+					           mrd.call)
+
+		names(mrd.output.values) <- c("FU Marker (copies/uL)", 
+		                              "FU ALB (copies/uL)", 
+		                              "Absolute MRD", 
+		                              "Absolute NTV", 
+			                          "Absolute PTV",
+		                              "MNC Baseline", 
+		                              "Total Cell Numbers", 
+		                              "Call")
 
 
-mrd.output.values <- c(fu.marker.formatted, fu.alb.concentration.formatted, absolute.mrd.formatted,  dx.baseline.formatted, background.level.formatted, relative.mrd.formatted, total.cell.no,  mrd.ntv.formatted, mrd.ptv.formatted, mrd.call)
+} else {
 
-names(mrd.output.values) <- c("FU Marker (copies/uL)", "FU ALB (copies/uL)", "Absolute MRD", "Tumour load", "MNC Baseline", "MRD", "Total Cell Numbers", "NTV", "PTV", "Call")
+		# relatiive mrd
+		relative.mrd <- absolute.mrd/dx.baseline
+
+		# mrd thresholds
+		mrd.ptv <- (ptv/fu.cell.concentration)/dx.baseline
+		mrd.ntv <- (ntv/fu.cell.concentration)/dx.baseline
+
+		dx.baseline.formatted <- sprintf("%#.3f", dx.baseline)
+		relative.mrd.formatted <- formatC(relative.mrd, format = "e", digits = 2)
+
+		mrd.ntv.formatted <- formatC(mrd.ntv, format = "e", digits = 2)
+		mrd.ptv.formatted <- formatC(mrd.ptv, format = "e", digits = 2)
+
+
+
+		mrd.output.values <- c(fu.marker.formatted, 
+					   fu.alb.concentration.formatted, 
+					   absolute.mrd.formatted,  
+					   absolute.ntv.formatted, 
+			           absolute.ptv.formatted, 
+					   dx.baseline.formatted, 
+					   background.level.formatted, 
+					   relative.mrd.formatted, 
+					   total.cell.no,  
+					   mrd.ntv.formatted, 
+					   mrd.ptv.formatted, mrd.call)
+
+		names(mrd.output.values) <- c("FU Marker (copies/uL)", 
+		                              "FU ALB (copies/uL)", 
+		                              "Absolute MRD", 
+		                              "Absolute NTV", 
+			                          "Absolute PTV", 
+		                              "Tumour load", 
+		                              "MNC Baseline", 
+		                              "MRD", 
+		                              "Total Cell Numbers", 
+		                              "NTV", 
+		                              "PTV", 
+		                              "Call")
+	
+
+}
+
+
+
 
 mrd.output.values <- as.matrix(mrd.output.values)
 

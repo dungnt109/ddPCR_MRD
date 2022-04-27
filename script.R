@@ -94,6 +94,16 @@ sample_sheet_file <- file.choose(new = FALSE)
 
 folder <- dirname(sample_sheet_file)
 
+cat("Do you want to perform absolute or relative MRD?\n1. Absolute\n2. Relative\n")
+
+runType <- as.numeric(trimws(readLines("stdin",n=1)))
+
+if (runType == 1) {
+	runType = "absolute"
+} else {
+	runType = "relative"
+}
+
 cat("\nVerified by?\n")
 verifier <- trimws(readLines("stdin",n=1))
 
@@ -491,15 +501,21 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 	
 		#dx.baseline <- readline(prompt = paste("Processing ", fu.sid, "_", mid, ". Please key in the Dx Baseline value or hit enter to use in-plate Dx baseline.\n", sep=""))
 		#dx.baseline <- as.numeric(dx.baseline)
+
+		if (runType == "relative") {
 		
-		cat(paste("Processing ", fu.sid, "_", mid, ". Please key in the tumour load at Dx or hit enter to use the value calculated from the current test.\n", sep=""));
-		dx.baseline <- trimws(readLines("stdin",n=1))
-		dx.baseline <- as.numeric(dx.baseline)
-		if(is.na(dx.baseline)) {
-			cat("Using in-plate Dx baseline.\n")
+				cat(paste("Processing ", fu.sid, "_", mid, ". Please key in the tumour load at Dx or hit enter to use the value calculated from the current test.\n", sep=""));
+				dx.baseline <- trimws(readLines("stdin",n=1))
+				dx.baseline <- as.numeric(dx.baseline)
+				if(is.na(dx.baseline)) {
+					cat("Using in-plate Dx baseline.\n")
+				} else {
+					cat("Using user specified Dx baseline.\n")
+				
+				}
+
 		} else {
-			cat("Using user specified Dx baseline.\n")
-		
+			dx.baseline <- 0
 		}
 		
 		fu.samples <- fu.marker.samples[fu.sample.pid == pid & fu.sample.mid == mid & fu.sample.sid == fu.sid]
@@ -577,6 +593,7 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 			mnc.alb.dilutionX=mnc.alb.dilutionX, 
 			mnc.alb.concentration=mnc.alb.concentration, 
 			verifier=verifier, 
+			runType=runType,
 			date=Sys.time()), 
 			output_file = paste(folder, "\\", fu.sid, "_", mid, "_", runmode, "_report.pdf", sep="")
 		)
