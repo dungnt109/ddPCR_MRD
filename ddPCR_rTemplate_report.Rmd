@@ -250,7 +250,7 @@ QC.status <- c(min.events.per.well.status,
 						final.qc.call)
 
 
-qc.names <- c("Min events per well (>=8000)", "Min FU Alb conc. (copies/uL; >10000, GOOD; 2000-10000; ACCEPTABLE; <2000 POOR)", "Assay controls for marker", "\\hspace{0.5cm}Positive (Dx marker conc., >=10 copies/uL)", "\\hspace{0.5cm}NTC (H2O marker conc., <=0.1 copies/uL)", "Assay Controls for Alb", "\\hspace{0.5cm}Positive (MNC Alb conc., >=50 copies/uL)", "\\hspace{0.5cm}NTC (H2O Alb conc., <=0.1 )", "\\textbf{Overall QC result}")
+qc.names <- c("Min events per well (>=8000)", "Min FU Alb conc. (copies/uL; >10000, GOOD; 2000-10000; ACCEPTABLE; <2000 POOR)", "Assay controls for marker", "\\hspace{0.5cm}Positive (Dx marker conc., >=10 copies/uL)", "\\hspace{0.5cm}NTC (H2O marker conc., <=0.1 copies/uL)", "Assay Controls for Alb", "\\hspace{0.5cm}Positive (MNC Alb conc., >=50 copies/uL)", "\\hspace{0.5cm}NTC (H2O Alb conc., <=0.1 copies/uL)", "\\textbf{Overall QC result}")
 
 qc.table <- cbind(QC.values, QC.status)
 
