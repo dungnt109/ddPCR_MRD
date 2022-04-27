@@ -327,13 +327,7 @@ absolute.ptv <- ptv/fu.cell.concentration
 absolute.ntv <- ntv/fu.cell.concentration
 
 
-#
-mrd.call <- "NEG"
-if (relative.mrd > mrd.ptv) {
-	mrd.call <- "POS"
-} else if (relative.mrd > mrd.ntv) {
-	mrd.call <- "LOQ"
-}
+
 
 
 fu.marker.formatted <- sprintf("%#.3f", fu.marker.info[1, "concentration"])
@@ -344,6 +338,15 @@ absolute.ntv.formatted <- formatC(absolute.ntv, format = "e", digits = 2)
 background.level.formatted <- formatC(background.level, format = "e", digits = 2)
 
 if (params$runType == "absolute") {
+
+
+		
+		mrd.call <- "NEG"
+		if (absolute.mrd > absolute.ptv) {
+			mrd.call <- "POS"
+		} else if (absolute.mrd > absolute.ntv) {
+			mrd.call <- "PNQ"
+		}
 
 		mrd.output.values <- c(fu.marker.formatted, 
 					   		   fu.alb.concentration.formatted, 
@@ -378,6 +381,15 @@ if (params$runType == "absolute") {
 
 		mrd.ntv.formatted <- formatC(mrd.ntv, format = "e", digits = 2)
 		mrd.ptv.formatted <- formatC(mrd.ptv, format = "e", digits = 2)
+
+
+		#
+		mrd.call <- "NEG"
+		if (relative.mrd > mrd.ptv) {
+			mrd.call <- "POS"
+		} else if (relative.mrd > mrd.ntv) {
+			mrd.call <- "PNQ"
+		}
 
 
 
