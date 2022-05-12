@@ -341,10 +341,12 @@ if (params$runType == "absolute") {
 
 
 		
-		mrd.call <- "NEG"
-		if (absolute.mrd > absolute.ptv) {
+		
+		if (absolute.mrd >= absolute.ptv) {
 			mrd.call <- "POS"
-		} else if (absolute.mrd > absolute.ntv) {
+		} else if (absolute.mrd < absolute.ntv) {
+			mrd.call <- "NEG"
+		} else {
 			mrd.call <- "PNQ"
 		}
 
@@ -384,10 +386,12 @@ if (params$runType == "absolute") {
 
 
 		#
-		mrd.call <- "NEG"
-		if (relative.mrd > mrd.ptv) {
+		
+		if (relative.mrd >= mrd.ptv) {
 			mrd.call <- "POS"
-		} else if (relative.mrd > mrd.ntv) {
+		} else if (relative.mrd < mrd.ntv) {
+			mrd.call <- "NEG"
+		} else {
 			mrd.call <- "PNQ"
 		}
 
