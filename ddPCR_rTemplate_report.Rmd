@@ -407,8 +407,10 @@ if (params$runType == "absolute") {
 		mrd.output.values <- c(fu.marker.formatted, 
 					   fu.alb.concentration.formatted, 
 					   absolute.mrd.formatted,  
+
+					   absolute.ptv.formatted, 
 					   absolute.ntv.formatted, 
-			           absolute.ptv.formatted, 
+			           
 					   dx.baseline.formatted, 
 					   background.level.formatted, 
 					   relative.mrd.formatted, 
@@ -419,8 +421,10 @@ if (params$runType == "absolute") {
 		names(mrd.output.values) <- c("FU Marker (copies/uL)", 
 		                              "FU ALB (copies/uL)", 
 		                              "Absolute MRD", 
+
+		                              "Absolute PTV", 
 		                              "Absolute NTV", 
-			                          "Absolute PTV", 
+			                         
 		                              "Tumour load", 
 		                              "MNC Baseline", 
 		                              "MRD", 
