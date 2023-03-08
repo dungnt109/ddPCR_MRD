@@ -332,10 +332,10 @@ absolute.ntv <- ntv/fu.cell.concentration
 
 fu.marker.formatted <- sprintf("%#.3f", fu.marker.info[1, "concentration"])
 fu.alb.concentration.formatted <- sprintf("%#.3f", fu.alb.concentration)
-absolute.mrd.formatted <- formatC(absolute.mrd, format = "e", digits = 2)
-absolute.ptv.formatted <- formatC(absolute.ptv, format = "e", digits = 2)
-absolute.ntv.formatted <- formatC(absolute.ntv, format = "e", digits = 2)
-background.level.formatted <- formatC(background.level, format = "e", digits = 2)
+absolute.mrd.formatted <- formatC(absolute.mrd, format = "E", digits = 2)
+absolute.ptv.formatted <- formatC(absolute.ptv, format = "E", digits = 2)
+absolute.ntv.formatted <- formatC(absolute.ntv, format = "E", digits = 2)
+background.level.formatted <- formatC(background.level, format = "E", digits = 2)
 
 if (params$runType == "absolute") {
 
@@ -379,10 +379,10 @@ if (params$runType == "absolute") {
 		mrd.ntv <- (ntv/fu.cell.concentration)/dx.baseline
 
 		dx.baseline.formatted <- sprintf("%#.3f", dx.baseline)
-		relative.mrd.formatted <- formatC(relative.mrd, format = "e", digits = 2)
+		relative.mrd.formatted <- formatC(relative.mrd, format = "E", digits = 2)
 
-		mrd.ntv.formatted <- formatC(mrd.ntv, format = "e", digits = 2)
-		mrd.ptv.formatted <- formatC(mrd.ptv, format = "e", digits = 2)
+		mrd.ntv.formatted <- formatC(mrd.ntv, format = "E", digits = 2)
+		mrd.ptv.formatted <- formatC(mrd.ptv, format = "E", digits = 2)
 
 
 		#
