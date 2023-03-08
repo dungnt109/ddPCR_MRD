@@ -126,7 +126,7 @@ run_by <- switch(
 	answer 
 	)
 
-cat("\nDate?\n1. ",format(Sys.Date(), "%d/%m/%Y") ,"\n2. blank\n")
+cat("\nDate?\n1.",format(Sys.Date(), "%d/%m/%Y") ,"\n2. blank\n")
 answer <- readLines("stdin",n=1)
 
 run_date <- switch(
