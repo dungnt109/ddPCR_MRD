@@ -413,8 +413,10 @@ if (params$runType == "absolute") {
 			           
 					   dx.baseline.formatted, 
 					   background.level.formatted, 
+
+					   total.cell.no, 
 					   relative.mrd.formatted, 
-					   total.cell.no,  
+					    
 
 					   mrd.ptv.formatted, 
 					   mrd.ntv.formatted, 
@@ -430,8 +432,10 @@ if (params$runType == "absolute") {
 			                         
 		                              "Tumour load", 
 		                              "MNC Baseline", 
-		                              "MRD", 
+
 		                              "Total Cell Numbers", 
+		                              "MRD", 
+		                              
 
 		                              "PTV", 
 		                              "NTV", 
