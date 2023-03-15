@@ -96,7 +96,7 @@ folder <- dirname(sample_sheet_file)
 
 cat("Do you want to perform absolute or relative MRD?\n1. Absolute\n2. Relative\n")
 
-runType <- readLines("stdin",n=1)
+answer <- readLines("stdin",n=1)
 
 runType <- switch(
 	answer, 
