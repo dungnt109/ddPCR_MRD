@@ -86,7 +86,21 @@ clustering_and_threshold <- function(intensities) {
 	return(list(c1.median=c1.median, c2.median=c2.median, threshold=solution, upper.bound = upper.bound, mask = intensities < upper.bound))
 }
 
+manual_clustering_and_threshold <- function(intensities, threshold) {
 
+	## initialize from max and min
+	km <- kmeans(as.matrix(intensities), c(max(intensities), min(intensities)), nstart=1000)
+	c1 <- intensities[intensities >= threshold]
+	c2 <- intensities[intensities < threshold]
+	c1.median <- median(c1)
+	c2.median <- median(c2)
+	solution <- threshold
+	## identify outlier in high cluster
+	intensities.highcluster <- intensities[intensities > solution]
+	upper.bound <- mark.outlier(intensities.highcluster, niqr)$upper.bound
+	return(list(c1.median=c1.median, c2.median=c2.median, threshold=solution, upper.bound = upper.bound, mask = intensities < upper.bound))
+
+}
 
 
 ##### load sample sheet
@@ -147,6 +161,26 @@ reported_by <- switch(
 	"4" = "", 
 	answer 
 	)
+
+cat("\nUse manual threshold?\n1. No\n2. Yes\n")
+answer <- readLines("stdin",n=1)
+
+is_manual_threshold <- switch(
+	answer, 
+	"1" = FALSE, 
+	"2" = TRUE, 
+	FALSE
+	)
+
+manual_threshold = 0 
+
+if (is_manual_threshold){
+
+	cat("\nEnter the manual threshold value?\n")
+
+	manual_threshold = as.numeric(trimws(readLines("stdin",n=1)))
+
+}
 
 
 cat(paste("Analyzing sample sheet", sample_sheet_file, "\n", sep=""))
@@ -389,8 +423,15 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 	#}
 	### identify outlier in the other channel
 	outlier.in.silence.channel <- mark.outlier(dx.marker.int[, alb.channel], niqr)
+
+	if (!is_manual_threshold) {
 	
-	dx.marker.clust <- clustering_and_threshold(dx.marker.int[outlier.in.silence.channel$mask, marker.channel])
+		dx.marker.clust <- clustering_and_threshold(dx.marker.int[outlier.in.silence.channel$mask, marker.channel])
+
+	} else {
+
+		dx.marker.clust <- manual_clustering_and_threshold(dx.marker.int[outlier.in.silence.channel$mask, marker.channel], manual_threshold)
+	}
 	
 	
 	
@@ -411,8 +452,15 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 		
 		dx.mask[to.inverse] <- !dx.mask[to.inverse]
 	}
+
+	if (!is_manual_threshold) {
 	
-	dx.marker.clust2 <- clustering_and_threshold(dx.marker.int[dx.mask, marker.channel])
+		dx.marker.clust2 <- clustering_and_threshold(dx.marker.int[dx.mask, marker.channel])
+
+	} else {
+
+		dx.marker.clust2 <- manual_clustering_and_threshold(dx.marker.int[dx.mask, marker.channel], manual_threshold)
+	}
 	
 	
 	#plot(dx.marker.int[,marker.channel], dx.marker.int[,alb.channel], col = (dx.marker.int[,marker.channel] > dx.marker.clust2$threshold) + 1,
