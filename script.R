@@ -162,26 +162,31 @@ reported_by <- switch(
 	answer 
 	)
 
-cat("\nUse manual threshold?\n1. No\n2. Yes\n")
-answer <- readLines("stdin",n=1)
+is_manual_threshold <- FALSE
 
-is_manual_threshold <- switch(
-	answer, 
-	"1" = FALSE, 
-	"2" = TRUE, 
-	FALSE
-	)
+if (runmode == "interactive"){
 
-manual_threshold = 0 
+	cat("\nUse manual threshold?\n1. No\n2. Yes\n")
+	answer <- readLines("stdin",n=1)
 
-if (is_manual_threshold){
+	is_manual_threshold <- switch(
+		answer, 
+		"1" = FALSE, 
+		"2" = TRUE, 
+		FALSE
+		)
 
-	cat("\nEnter the manual threshold value?\n")
+	manual_threshold = 0 
 
-	manual_threshold = as.numeric(trimws(readLines("stdin",n=1)))
+	if (is_manual_threshold){
+
+		cat("\nPlease key in the marker assay's intensities threshold!\n")
+
+		manual_threshold = as.numeric(trimws(readLines("stdin",n=1)))
+
+	}
 
 }
-
 
 cat(paste("Analyzing sample sheet", sample_sheet_file, "\n", sep=""))
 
@@ -686,6 +691,8 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 			reported_by=reported_by,
 			verifier=verifier, 
 			runType=runType,
+			is_manual_threshold=is_manual_threshold, 
+			manual_threshold=manual_threshold,
 			date=Sys.time()), 
 			output_file = paste(folder, "\\", fu.sid, "_", mid, "_", runmode, "_report.pdf", sep="")
 		)

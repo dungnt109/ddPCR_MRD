@@ -23,6 +23,8 @@ params:
   reported_by: ""
   runType: ""
   verifier: ""
+  is_manual_threshold: FALSE
+  manual_threshold: 0
 title: "ddPCR laboratory results"
 fontsize: 10pt
 geometry: margin=1.5cm
@@ -285,6 +287,11 @@ absolute.mrd <- fu.marker.info[1, "concentration"] / fu.cell.concentration
 
 writeLines("Values input:")
 lineNum <- 0
+
+if (is_manual_threshold){
+        lineNum <- lineNum + 1
+        writeLines(paste(lineNum, ". Using marker assay's intensities threshold ", manual_threshold, sep=""))
+}
 
 # diagnostic baseline
 dx.baseline <- params$dx.baseline
