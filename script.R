@@ -163,6 +163,7 @@ reported_by <- switch(
 	)
 
 is_manual_threshold <- FALSE
+manual_threshold = 0 
 
 if (runmode == "interactive"){
 
@@ -176,7 +177,7 @@ if (runmode == "interactive"){
 		FALSE
 		)
 
-	manual_threshold = 0 
+	
 
 	if (is_manual_threshold){
 
