@@ -196,12 +196,41 @@ fu.alb.info.perwell <- get_info(c(params$fu.alb))
 fu.alb.dilution.factor.perwell <- as.numeric(gsub("x$", "", sapply(strsplit(rownames(fu.alb.info.perwell), "_", fixed=TRUE), "[[", 4)))
 min.fu.alb.conc.perwell <- min(fu.alb.info.perwell[, "concentration"] * fu.alb.dilution.factor.perwell)
 min.fu.alb.conc.perwell.formatted <- sprintf("%#.3f", min.fu.alb.conc.perwell)
-min.fu.alb.conc.perwell.status <- "\\textcolor{red}{POOR}"
-if (min.fu.alb.conc.perwell >= 2000) {
+
+
+if (min.fu.alb.conc.perwell < 2000){
+
+	min.fu.alb.conc.perwell.status <- "\\textcolor{red}{POOR}"
+
+	value1 <- ""
+	status1 <- ""
+	value2 <- ""
+	status2 <- ""
+	value3 <- min.fu.alb.conc.perwell.formatted
+	status3 <- min.fu.alb.conc.perwell.status
+
+} else if (min.fu.alb.conc.perwell >= 2000 && min.fu.alb.conc.perwell <= 10000) {
+
 	min.fu.alb.conc.perwell.status  <- "\\textcolor{brown}{ACCEPTABLE}"
-}
-if (min.fu.alb.conc.perwell > 10000) {
+
+	value1 <- ""
+	status1 <- ""
+	value2 <- min.fu.alb.conc.perwell.formatted
+	status2 <- min.fu.alb.conc.perwell.status
+	value3 <- ""
+	status3 <- ""
+
+} else {
+
 	min.fu.alb.conc.perwell.status  <- "\\textcolor{darkgreen}{GOOD}"
+
+	value1 <- min.fu.alb.conc.perwell.formatted
+	status1 <- min.fu.alb.conc.perwell.status
+	value2 <- ""
+	status2 <- ""
+	value3 <- ""
+	status3 <- ""
+
 }
 
 
@@ -259,13 +288,6 @@ QC.status <- c(min.events.per.well.status,
 						final.qc.call)
 
 
-qc.names <- c("Min events per well (>=8000)", "Min FU Alb conc. (copies/uL; >10000, GOOD; 2000-10000; ACCEPTABLE; <2000 POOR)", "Assay controls for marker", "\\hspace{0.5cm}Positive (Dx marker conc., >=10 copies/uL)", "\\hspace{0.5cm}NTC (H2O marker conc., <=0.1 copies/uL)", "Assay Controls for Alb", "\\hspace{0.5cm}Positive (MNC Alb conc., >=50 copies/uL)", "\\hspace{0.5cm}NTC (H2O Alb conc., <=0.1 copies/uL)", "\\textbf{Overall QC result}")
-
-qc.table <- cbind(QC.values, QC.status)
-
-rownames(qc.table) <- qc.names
-
-kable(qc.table, caption = "Quality control summary")
 
 ```
 
@@ -299,10 +321,10 @@ kable(qc.table, caption = "Quality control summary")
 \newline \hspace*{0.3cm}- Positive (MNC [5ng]) ALB Conc. 
 \newline \hspace*{0.3cm}- NTC (H2O) ALB Conc.
 & \leavevmode\newline $\ge$50 copies/uL \newline $\le$0.1 copies/uL 
-& \leavevmode\newline `r min.hl60.gus.con.perwell.formatted` 
-             \newline `r max.h2o.gus.con.perwell.formatted` 
-& \leavevmode\newline `r min.hl60.gus.con.perwell.status`    
-             \newline `r max.h2o.gus.con.perwell.status` \\
+& \leavevmode\newline `r min.mnc.alb.con.perwell.formatted` 
+             \newline `r max.h2o.alb.con.perwell.formatted` 
+& \leavevmode\newline `r min.mnc.alb.con.perwell.status`    
+             \newline `r max.h2o.alb.con.perwell.status` \\
 
 \hline
 
