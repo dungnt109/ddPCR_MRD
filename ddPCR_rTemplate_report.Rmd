@@ -38,6 +38,9 @@ output:
 header-includes:
 - \usepackage{fancyhdr}
 - \usepackage{lastpage}
+- \usepackage{xcolor}
+- \usepackage{tabularx}
+- \usepackage{caption}
 
 ---
 \definecolor{darkgreen}{HTML}{188a06}
