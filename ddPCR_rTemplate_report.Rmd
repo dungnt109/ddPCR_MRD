@@ -303,7 +303,7 @@ QC.status <- c(min.events.per.well.status,
 &  `r format(min.events.per.well, scientific = FALSE)`  
 &  `r min.events.per.well.status` \\
 
-2. Minium FU [1000ng] ALB Conc. 
+2. Minimum FU [1000ng] ALB Conc. 
 &  >1000 copies/uL (GOOD) \newline 2000-10000 copies/uL (ACCEPTABLE) \newline <2000 copies/uL (POOR)       
 & `r value1`  \leavevmode\newline `r value2`  \leavevmode\newline `r value3` 
 & `r status1` \leavevmode\newline `r status2` \leavevmode\newline `r status3`   \\
@@ -311,7 +311,7 @@ QC.status <- c(min.events.per.well.status,
 3. Assay Controls for Marker Assay 
 \newline \hspace*{0.3cm}- Positive (Dx [10ng]) Marker Conc. 
 \newline \hspace*{0.3cm}- NTC (H2O) Marker Conc. 
-& \leavevmode\newline $\ge$10 copies/uL \newline $\le$0.1copies/uL 
+& \leavevmode\newline $\ge$10 copies/uL \newline $\le$0.1 copies/uL 
 & \leavevmode\newline `r min.dx.marker.con.perwell.formatted` 
              \newline `r max.h2o.marker.con.perwell.formatted` 
 & \leavevmode\newline `r min.dx.marker.con.perwell.status`    
