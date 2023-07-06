@@ -3,6 +3,7 @@
 # channels
 args = commandArgs(trailingOnly=TRUE)
 
+separator <- "/"
 #
 library(rmarkdown)
 
@@ -244,12 +245,16 @@ names(files) <- well.position
 #### get the control
 ## get ALB, MNC
 mnc.alb <- samples[grepl("^MNC_ALB_", samples)]
-mnc.alb.file <- paste(folder, files[names(mnc.alb)], sep="\\") 
+mnc.alb.file <- paste(folder, files[names(mnc.alb)], sep=separator) 
 
 mnc.alb.int <- read.csv(mnc.alb.file, header=TRUE)
 mnc.alb.int <- mnc.alb.int[sample(nrow(mnc.alb.int)), ]
 
+
+
 mnc.alb.clust <- clustering_and_threshold(mnc.alb.int[, alb.channel])
+
+
 
 ##if (!silence) {
 ##	plot(mnc.alb.int[,alb.channel],pch=16, cex=0.5, xlab="MNC, ALB", ylab="Amplitude")
@@ -258,14 +263,14 @@ mnc.alb.clust <- clustering_and_threshold(mnc.alb.int[, alb.channel])
 
 # NTC, ALB
 h2o.alb <- samples[grepl("^H2O_ALB_", samples)]
-h2o.alb.file <-paste(folder, files[names(h2o.alb)], sep="\\") 
+h2o.alb.file <-paste(folder, files[names(h2o.alb)], sep=separator) 
 h2o.alb.int <- read.csv(h2o.alb.file, header=TRUE)
 h2o.alb.int <- h2o.alb.int[sample(nrow(h2o.alb.int)), ]
 
 
 ### get Dx list
 dx.marker.samples <- samples[grepl("^Dx_Mk_", samples)]
-dx.marker.files <- paste(folder, files[names(dx.marker.samples)], sep="\\")
+dx.marker.files <- paste(folder, files[names(dx.marker.samples)], sep=separator)
 dx.sample.sid <- sapply(strsplit(dx.marker.samples, "_", fixed=TRUE), "[[", 3)
 dx.sample.pid <- sapply(dx.sample.sid, function(x) {
 	reg <- regexpr("[A-Z]+[0-9]+", x)
@@ -277,7 +282,7 @@ dx.sample.ng <- as.numeric(gsub("ng", "", sapply(strsplit(dx.marker.samples, "_"
 
 ### get fu list
 fu.marker.samples <- samples[grepl("^FU_Mk_", samples)]
-fu.marker.files <- paste(folder, files[names(fu.marker.samples)], sep="\\")
+fu.marker.files <- paste(folder, files[names(fu.marker.samples)], sep=separator)
 fu.sample.sid <- sapply(strsplit(fu.marker.samples, "_", fixed=TRUE), "[[", 3)
 fu.sample.pid <- sapply(fu.sample.sid, function(x) {
 	reg <- regexpr("[A-Z]+[0-9]+", x)
@@ -290,7 +295,7 @@ fu.sample.ng <- as.numeric(gsub("ng", "", sapply(strsplit(fu.marker.samples, "_"
 
 ### get MNC marker list
 mnc.marker.samples <- samples[grepl("^MNC_Mk_", samples)]
-mnc.marker.files <- paste(folder, files[names(mnc.marker.samples)], sep="\\")
+mnc.marker.files <- paste(folder, files[names(mnc.marker.samples)], sep=separator)
 mnc.sample.sid <- sapply(strsplit(mnc.marker.samples, "_", fixed=TRUE), "[[", 3)
 mnc.sample.pid <- sapply(mnc.sample.sid, function(x) {
 	reg <- regexpr("[A-Z]+[0-9]+", x)
@@ -301,7 +306,7 @@ mnc.sample.ng <- as.numeric(gsub("ng", "", sapply(strsplit(mnc.marker.samples, "
 
 ### get H2O marker list
 h2o.marker.samples <- samples[grepl("^H2O_Mk_", samples)]
-h2o.marker.files <- paste(folder, files[names(h2o.marker.samples)], sep="\\")
+h2o.marker.files <- paste(folder, files[names(h2o.marker.samples)], sep=separator)
 h2o.sample.sid <- sapply(strsplit(h2o.marker.samples, "_", fixed=TRUE), "[[", 3)
 h2o.sample.pid <- sapply(h2o.sample.sid, function(x) {
 	reg <- regexpr("[A-Z]+[0-9]+", x)
@@ -314,7 +319,7 @@ h2o.sample.ng <- as.numeric(gsub("ng", "", sapply(strsplit(h2o.marker.samples, "
 
 ### get ALB samples
 alb.samples <- samples[grepl("ALB", samples)]
-alb.files <- paste(folder, files[names(alb.samples)], sep="\\")
+alb.files <- paste(folder, files[names(alb.samples)], sep=separator)
 
 
 
@@ -331,7 +336,7 @@ alb.samples.info <- sapply(alb.samples.split, function(x) {x[1:3]})
 
 
 alb.h2o.samples <- samples[grepl("^H2O_ALB", samples)]
-alb.h2o.files <- paste(folder, files[names(alb.h2o.samples)], sep="\\")
+alb.h2o.files <- paste(folder, files[names(alb.h2o.samples)], sep=separator)
 
 
 cat("Analyzing albumin wells...\n")
@@ -494,7 +499,7 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 	mnc.files <- mnc.marker.files[mnc.sample.pid == pid & mnc.sample.mid == mid]
 	
 	mnc.results <- lapply(1:length(mnc.samples), function(j) {
-		mnc.file <- paste(folder, files[names(mnc.samples)[j]], sep="\\")
+		mnc.file <- paste(folder, files[names(mnc.samples)[j]], sep=separator)
 		mnc.marker.int <- read.csv(mnc.file, header=TRUE)
 		mnc.marker.int <- mnc.marker.int[sample(nrow(mnc.marker.int)), ]
 
@@ -538,7 +543,7 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 	h2o.files <- h2o.marker.files[h2o.sample.pid == pid & h2o.sample.mid == mid]
 	
 	h2o.results <- lapply(1:length(h2o.samples), function(j) {
-		h2o.file <- paste(folder, files[names(h2o.samples)[j]], sep="\\")
+		h2o.file <- paste(folder, files[names(h2o.samples)[j]], sep=separator)
 		h2o.marker.int <- read.csv(h2o.file, header=TRUE)
 		h2o.marker.int <- h2o.marker.int[sample(nrow(h2o.marker.int)), ]
 
@@ -616,7 +621,7 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 		fu.samples <- fu.marker.samples[fu.sample.pid == pid & fu.sample.mid == mid & fu.sample.sid == fu.sid]
 		fu.files <- fu.marker.files[fu.sample.pid == pid & fu.sample.mid == mid & fu.sample.sid == fu.sid]
 		fu.results <- lapply (1:length(fu.samples), function(j) {
-			fu.file <- paste(folder, files[names(fu.samples)[j]], sep="\\")
+			fu.file <- paste(folder, files[names(fu.samples)[j]], sep=separator)
 			fu.marker.int <- read.csv(fu.file, header=TRUE)
 			fu.marker.int <- fu.marker.int[sample(nrow(fu.marker.int)), ]
 
@@ -695,7 +700,7 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 			is_manual_threshold=is_manual_threshold, 
 			manual_threshold=manual_threshold,
 			date=Sys.time()), 
-			output_file = paste(folder, "\\", fu.sid, "_", mid, "_", runmode, "_report.pdf", sep="")
+			output_file = paste(folder, separator, fu.sid, "_", mid, "_", runmode, "_report.pdf", sep="")
 		)
 		## draw figure 
 		render("./ddPCR_rTemplate_2dFigs.Rmd", params = list(
@@ -714,7 +719,7 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 			mnc.alb.dilutionX=mnc.alb.dilutionX, 
 			mnc.alb.concentration=mnc.alb.concentration, 
 			date=Sys.time()), 
-			output_file = paste(folder, "\\", fu.sid, "_", mid, "_", runmode, "_2dFigs.pdf", sep="")
+			output_file = paste(folder, separator, fu.sid, "_", mid, "_", runmode, "_2dFigs.pdf", sep="")
 		)
 	
 	}
