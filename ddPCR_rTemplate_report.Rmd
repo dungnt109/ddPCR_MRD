@@ -293,8 +293,9 @@ QC.status <- c(min.events.per.well.status,
 
 
 \captionof{table}{Quality control summary}
-\begin{tabular}{p{6cm}p{6cm}p{2cm}p{2cm}}
 \vspace*{3mm}
+\begin{tabular}{p{6cm}p{6cm}p{2cm}p{2cm}}
+
 \hline
  \textbf{QC criteria} &  \textbf{QC criteria limit} &  \textbf{QC values} &  \textbf{QC status}\\
 \hline   
