@@ -23,12 +23,8 @@ cat(paste(silence, "\n"))
 # 1. increase niqr
 # 2. decrease quantile.range
 # suggested default: 
-#niqr <- 3
-#quantile.range <- 0.02
-
-# the parameters below may not sensitive
-niqr <- 5
-quantile.range <- 0.005
+niqr <- 3
+quantile.range <- 0.02
 
 
 show_outliers <- TRUE
@@ -119,30 +115,33 @@ runType <- switch(
 	"2" = "relative", 
 	"relative")
 
-cat("\nVerified by?\n1. Prof Allen Yeoh\n2. Blank\n")
+cat("\nVerified by?\n1. Prof Allen Yeoh\n2. Dr Lu Yi\n3. Blank\n")
 answer <- readLines("stdin",n=1)
 
 
 verifier <- switch(
 	answer, 
 	"1" = "Prof Allen Yeoh",
-	"2" = "", 
+	"2" = "Dr Lu Yi", 
+	"3" = "",
 	answer)
 
-cat("\nRun by?\n1. Amanda Lee\n2. Huan Pei Tee\n3. Nurhilya\n4. Others\n5. Blank\n")
+cat("\nRun by?\n1. Amanda Lee\n2. Huan Pei Tee\n3. Nurhilya\n4. Dr Lu Yi\n5. Others\n6. Blank\n")
 answer <- readLines("stdin",n=1)
 
-if (answer == "4"){
+if (answer == "5"){
 	cat("\nPlease specify:\n")
 	run_by <- readLines("stdin",n=1)
 } else {
-	run_by <- switch(
-		answer, 
-		"1" = "Amanda Lee", 
-		"2" = "Huan Pei Tee", 
-		"3" = "Nurhilya", 
-		"5" = "", 
-		answer 
+		run_by <- switch(
+			answer, 
+			"1" = "Amanda Lee", 
+			"2" = "Huan Pei Tee", 
+			"3" = "Nurhilya", 
+			"4" = "Dr Lu Yi",
+			"5" = "Others",
+			"6" = "", 
+			answer 
 		)
 }
 
@@ -156,10 +155,10 @@ run_date <- switch(
 	answer 
 	)
 
-cat("\nReported by?\n1. Shirley Kham\n2. Huan Pei Tee\n3. Nurhilya\n4. Others\n5. Blank\n")
+cat("\nReported by?\n1. Shirley Kham\n2. Huan Pei Tee\n3. Nurhilya\n4. Dr Lu Yi\n5. Others\n6. Blank\n")
 answer <- readLines("stdin",n=1)
 
-if (answer == "4"){
+if (answer == "5"){
 	cat("\nPlease specify:\n")
 	reported_by <- readLines("stdin",n=1)
 } else {
@@ -169,7 +168,9 @@ if (answer == "4"){
 		"1" = "Shirley Kham", 
 		"2" = "Huan Pei Tee", 
 		"3" = "Nurhilya", 
-		"5" = "", 
+		"4" = "Dr Lu Yi", 
+		"5" = "Others",
+		"6" = "", 
 		answer 
 		)
 }
@@ -277,6 +278,17 @@ h2o.alb <- samples[grepl("^H2O_ALB_", samples)]
 h2o.alb.file <-paste(folder, files[names(h2o.alb)], sep=separator) 
 h2o.alb.int <- read.csv(h2o.alb.file, header=TRUE)
 h2o.alb.int <- h2o.alb.int[sample(nrow(h2o.alb.int)), ]
+
+
+### get QC list
+qc.marker.samples <- samples[grepl("^QC_Mk_", samples)]                                #
+qc.marker.files <- paste(folder, files[names(qc.marker.samples)], sep=separator)
+qc.sample.sid <- sapply(strsplit(qc.marker.samples, "_", fixed=TRUE), "[[", 3)
+qc.sample.pid <- sapply(qc.sample.sid, function(x) {
+	reg <- regexpr("[A-Z]+[0-9]+", x)
+	substring(x, reg[1], reg[1] + attr(reg, "match.length")[1] - 1)
+})
+qc.sample.mid <- sapply(strsplit(qc.marker.samples, "_", fixed=TRUE), "[[", 4)
 
 
 ### get Dx list
@@ -505,6 +517,63 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 						concentration=concentration, 
 						name=dx.marker.samples[i], 
 						n.outliers = n.outliers))
+
+
+
+	##QC
+
+
+	qc.samples <- qc.marker.samples[qc.sample.pid == pid & qc.sample.mid == mid]
+
+	qc.files <- qc.marker.files[qc.sample.pid == pid & qc.sample.mid == mid]
+	
+	qc.results <- lapply(1:length(qc.samples), function(j) {
+		qc.file <- paste(folder, files[names(qc.samples)[j]], sep=separator)
+		qc.marker.int <- read.csv(qc.file, header=TRUE)
+		qc.marker.int <- qc.marker.int[sample(nrow(qc.marker.int)), ]
+
+
+		qc.mask <- (qc.marker.int[, alb.channel] < outlier.in.silence.channel$upper.bound) & (qc.marker.int[, alb.channel] > outlier.in.silence.channel$lower.bound) & (qc.marker.int[, marker.channel] < dx.marker.clust2$upper.bound)
+		
+		
+		if (!silence) {
+		
+			## get plot range
+			x.min <- min(c(qc.marker.int[, marker.channel], dx.marker.int[, marker.channel]))
+			x.max <- max(c(qc.marker.int[, marker.channel], dx.marker.int[, marker.channel]))
+			y.min <- min(c(qc.marker.int[, alb.channel], dx.marker.int[, alb.channel]))
+			y.max <- max(c(qc.marker.int[, alb.channel], dx.marker.int[, alb.channel]))
+			
+			
+			plot(qc.marker.int[,marker.channel], qc.marker.int[,alb.channel], col = (qc.marker.int[,marker.channel] > dx.marker.clust2$threshold) + 1,
+					pch = c(4, 16)[qc.mask + 1],
+					main=paste(qc.samples[j], names(qc.samples)[j], "\n Click to remove, and click the middle key when done." ), xlab = "Channel 1", ylab="Channel 2", xlim=c(x.min, x.max), ylim=c(y.min, y.max))
+			lines(c(dx.marker.clust2$threshold, dx.marker.clust2$threshold), c(-1e8, 1e8), col=2, lwd=1.5)
+			qc.to.inverse <- identify(qc.marker.int[,1], qc.marker.int[,2], c("✓", "x")[qc.mask + 1], col="blue")
+			qc.mask[qc.to.inverse] <- !qc.mask[qc.to.inverse]
+		}
+		n.positive.droplets <- sum(qc.marker.int[,marker.channel][qc.mask] > dx.marker.clust2$threshold)
+		n.droplets <- sum(qc.mask)
+		n.outliers <- sum(!qc.mask)
+		concentration <- -log(1-(n.positive.droplets/n.droplets))/0.00085
+	
+		list(intensities=qc.marker.int, 
+						threshold=dx.marker.clust2$threshold, 
+						mask=qc.mask, 
+						n.positive.droplets=n.positive.droplets, 
+						n.droplets = n.droplets, 
+						concentration=concentration, 
+						name=qc.samples[j],   
+						n.outliers = n.outliers)
+	})
+
+
+	qc.concentration <- qc.results[[1]]$concentration
+
+
+
+
+
 	## MNC marker files
 	mnc.samples <- mnc.marker.samples[mnc.sample.pid == pid & mnc.sample.mid == mid]
 	mnc.files <- mnc.marker.files[mnc.sample.pid == pid & mnc.sample.mid == mid]
@@ -710,6 +779,7 @@ dx.sample.clust <- lapply(1:length(dx.marker.samples), function(i) {
 			runType=runType,
 			is_manual_threshold=is_manual_threshold, 
 			manual_threshold=manual_threshold,
+			qc.concentration=qc.concentration,
 			date=Sys.time()), 
 			output_file = paste(folder, separator, fu.sid, "_", mid, "_", runmode, "_report.pdf", sep="")
 		)

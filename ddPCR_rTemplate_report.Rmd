@@ -25,6 +25,7 @@ params:
   verifier: ""
   is_manual_threshold: FALSE
   manual_threshold: 0
+  qc.concentration: 0
 title: "ddPCR laboratory results"
 fontsize: 10pt
 geometry: margin=1.5cm
@@ -49,7 +50,7 @@ header-includes:
 \fancypagestyle{plain}{%
   \renewcommand{\headrulewidth}{0pt}%
   \fancyhf{}%
-  \fancyfoot[C]{\footnotesize Page \thepage\, of\, \pageref*{LastPage} `r params$sid` `r params$mid` Generated at `r params$date` by ddPCR MRD Pipeline Version 3.0, 17 Jul 2023}
+  \fancyfoot[C]{\footnotesize Page \thepage\, of\, \pageref*{LastPage} `r params$sid` `r params$mid` Generated at `r params$date` by ddPCR MRD Pipeline Version 3.0, 5 Sep 2024}
   \setlength\footskip{0pt}
 }
 \pagestyle{plain}
@@ -123,9 +124,9 @@ get_info <- function(multiwell.results) {
 		events <- nrow(results$intensities)
 		outliers <- results$n.outliers
 		used.events <- events - outliers
-		threshold <- results$threshold
+		threshold <- round(results$threshold)
 		positive <- results$n.positive.droplets
-		concentration <- results$concentration
+		concentration <- round(results$concentration, digits = 3) 
 		c(events, outliers, used.events, threshold, positive, concentration)
 	}))
 	rownames(tab) <- sapply(multiwell.results, "[[", "name")
@@ -146,7 +147,7 @@ get_merged_info <- function(multiwell.results, sample.names=NA) {
 	total.used.events <- tapply(tab[, "used.events"], sample.names, sum)[unique.names]
 	total.positive <- tapply(tab[, "positive"], sample.names, sum)[unique.names]
 	concentration <- -log(1-(total.positive/total.used.events))/0.00085
-	concentration <- concentration[unique.names]
+	concentration <- round(concentration[unique.names], digits = 3) 
 	replicates <- tapply(tab[, "events"], sample.names, length)[unique.names]
 	info <- cbind(replicates=replicates, events=total.events, outliers=total.outliers, used.events=total.used.events,positive=total.positive,concentration=concentration )
 	rownames(info) <- unique.names
@@ -185,7 +186,7 @@ kable(alb.merged.info, caption = "Per sample summary of Albumin results")
 ```{r qc, echo=FALSE}
 ## >= 8000
 min.events.per.well <- min(alb.info[, "used.events"], marker.info[, "used.events"])
-min.events.per.well.status <- c("\\textcolor{red}{FAIL}", "\\textcolor{darkgreen}{PASS}")[(min.events.per.well >= 8000) +  1]
+min.events.per.well.status <- c("\\textcolor{red}{WARNING}", "\\textcolor{darkgreen}{PASS}")[(min.events.per.well >= 8000) +  1]
 
 
 ## DNA quality, min FU, Alb, concentration
@@ -195,7 +196,7 @@ min.events.per.well.status <- c("\\textcolor{red}{FAIL}", "\\textcolor{darkgreen
 fu.alb.info.perwell <- get_info(c(params$fu.alb))
 fu.alb.dilution.factor.perwell <- as.numeric(gsub("x$", "", sapply(strsplit(rownames(fu.alb.info.perwell), "_", fixed=TRUE), "[[", 4)))
 min.fu.alb.conc.perwell <- min(fu.alb.info.perwell[, "concentration"] * fu.alb.dilution.factor.perwell)
-min.fu.alb.conc.perwell.formatted <- sprintf("%#.3f", min.fu.alb.conc.perwell)
+min.fu.alb.conc.perwell.formatted <- sprintf("%#.2f", min.fu.alb.conc.perwell)
 
 
 if (min.fu.alb.conc.perwell < 2000){
@@ -238,36 +239,36 @@ if (min.fu.alb.conc.perwell < 2000){
 ### positive marker control >=10
 dx.marker.info.perwell <- get_info(c(params$dx.marker))
 min.dx.marker.con.perwell <- min(dx.marker.info.perwell[, "concentration"])
-min.dx.marker.con.perwell.formatted <- sprintf("%#.3f", min.dx.marker.con.perwell)
-min.dx.marker.con.perwell.status <- c("\\textcolor{red}{FAIL}", "\\textcolor{darkgreen}{PASS}")[(min.dx.marker.con.perwell >= 10) + 1]
+min.dx.marker.con.perwell.formatted <- sprintf("%#.2f", min.dx.marker.con.perwell)
+min.dx.marker.con.perwell.status <- c("\\textcolor{red}{WARNING}", "\\textcolor{darkgreen}{PASS}")[(min.dx.marker.con.perwell >= 10) + 1]
 
 #### Negative control just indicate value
 #mnc.marker.info.perwell <- get_info(c(params$mnc.marker))
 #max.mnc.marker.con.perwell <- max(mnc.marker.info.perwell[, "concentration"])
-#max.mnc.marker.con.perwell.formatted <- sprintf("%#.3f", max.mnc.marker.con.perwell)
+#max.mnc.marker.con.perwell.formatted <- sprintf("%#.2f", max.mnc.marker.con.perwell)
 #
 
 ### NTC <= 2
 h2o.marker.info.perwell <- get_info(c(params$h2o.marker))
 max.h2o.marker.con.perwell <- max(h2o.marker.info.perwell[, "concentration"])
-max.h2o.marker.con.perwell.formatted <- sprintf("%#.3f", max.h2o.marker.con.perwell)
-max.h2o.marker.con.perwell.status <- c("\\textcolor{red}{FAIL}", "\\textcolor{darkgreen}{PASS}")[(max.h2o.marker.con.perwell <= 0.1) + 1]
+max.h2o.marker.con.perwell.formatted <- sprintf("%#.2f", max.h2o.marker.con.perwell)
+max.h2o.marker.con.perwell.status <- c("\\textcolor{red}{WARNING}", "\\textcolor{darkgreen}{PASS}")[(max.h2o.marker.con.perwell <= 0.1) + 1]
 
 ## controls for albumin
 ### positive albumin control >= 50
 mnc.alb.info.perwell <- get_info(c(params$mnc.alb))
 min.mnc.alb.con.perwell <- min(mnc.alb.info.perwell[, "concentration"])
-min.mnc.alb.con.perwell.formatted <- sprintf("%#.3f", min.mnc.alb.con.perwell)
-min.mnc.alb.con.perwell.status <- c("\\textcolor{red}{FAIL}", "\\textcolor{darkgreen}{PASS}")[(min.mnc.alb.con.perwell >= 50) + 1]
+min.mnc.alb.con.perwell.formatted <- sprintf("%#.2f", min.mnc.alb.con.perwell)
+min.mnc.alb.con.perwell.status <- c("\\textcolor{red}{WARNING}", "\\textcolor{darkgreen}{PASS}")[(min.mnc.alb.con.perwell >= 50) + 1]
 
 ### NTC <= 2
 h2o.alb.info.perwell <- get_info(c(params$h2o.alb))
 max.h2o.alb.con.perwell <- max(h2o.alb.info.perwell[, "concentration"])
-max.h2o.alb.con.perwell.formatted <- sprintf("%#.3f", max.h2o.alb.con.perwell)
-max.h2o.alb.con.perwell.status <- c("\\textcolor{red}{FAIL}","\\textcolor{darkgreen}{PASS}")[(max.h2o.alb.con.perwell <= 0.1) + 1]
+max.h2o.alb.con.perwell.formatted <- sprintf("%#.2f", max.h2o.alb.con.perwell)
+max.h2o.alb.con.perwell.status <- c("\\textcolor{red}{WARNING}","\\textcolor{darkgreen}{PASS}")[(max.h2o.alb.con.perwell <= 0.1) + 1]
 
 
-final.qc.call <- c("\\textbf{\\textcolor{red}{FAIL}}","\\textbf{\\textcolor{darkgreen}{PASS}}")[(min.events.per.well.status == "\\textcolor{darkgreen}{PASS}" && min.fu.alb.conc.perwell.status != "\\textcolor{red}{POOR}" && min.dx.marker.con.perwell.status == "\\textcolor{darkgreen}{PASS}" && max.h2o.marker.con.perwell.status == "\\textcolor{darkgreen}{PASS}" && min.mnc.alb.con.perwell.status == "\\textcolor{darkgreen}{PASS}" && max.h2o.alb.con.perwell.status == "\\textcolor{darkgreen}{PASS}") + 1]
+final.qc.call <- c("\\textbf{\\textcolor{red}{WARNING}}","\\textbf{\\textcolor{darkgreen}{PASS}}")[(min.events.per.well.status == "\\textcolor{darkgreen}{PASS}" && min.fu.alb.conc.perwell.status != "\\textcolor{red}{POOR}" && min.dx.marker.con.perwell.status == "\\textcolor{darkgreen}{PASS}" && max.h2o.marker.con.perwell.status == "\\textcolor{darkgreen}{PASS}" && min.mnc.alb.con.perwell.status == "\\textcolor{darkgreen}{PASS}" && max.h2o.alb.con.perwell.status == "\\textcolor{darkgreen}{PASS}") + 1]
 
 
 
@@ -327,6 +328,8 @@ QC.status <- c(min.events.per.well.status,
 & \leavevmode\newline `r min.mnc.alb.con.perwell.status`    
              \newline `r max.h2o.alb.con.perwell.status` \\
 
+5. LPC concentration (copies/uL) & & `r sprintf("%#.2f", qc.concentration)` & \\
+
 \hline
 
 \textbf{Overall QC result} &     &  & `r final.qc.call` \\
@@ -368,14 +371,14 @@ if (is.na(dx.baseline)) {
 	dx.baseline <- dx.marker.info[1, "concentration"] / dx.cell.concentration
 
 	lineNum <- lineNum + 1
-	writeLines(paste(lineNum, ". Using in-plate diagnostic baseline.", sep=""))
+	writeLines(paste(lineNum, ". Using calculated diagnostic baseline.", sep=""))
 } else {
 	lineNum <- lineNum + 1
 	writeLines(paste(lineNum, ". Using preset diagnostic baseline ", dx.baseline, sep=""))
 }
 
 lineNum <- lineNum + 1
-writeLines(paste(lineNum, ". Using MNC Albumin concentration ", params$mnc.alb.concentration, sep=""))
+writeLines(paste(lineNum, ". Using preset MNC Albumin concentration ", params$mnc.alb.concentration, sep=""))
 
 lineNum <- lineNum + 1
 writeLines(paste(lineNum, ". Using MNC dilution factor ", params$mnc.alb.dilutionX, sep=""))
@@ -415,8 +418,8 @@ absolute.ntv <- ntv/fu.cell.concentration
 
 
 
-fu.marker.formatted <- sprintf("%#.3f", fu.marker.info[1, "concentration"])
-fu.alb.concentration.formatted <- sprintf("%#.3f", fu.alb.concentration)
+fu.marker.formatted <- sprintf("%#.2f", fu.marker.info[1, "concentration"])
+fu.alb.concentration.formatted <- sprintf("%#.2f", fu.alb.concentration)
 absolute.mrd.formatted <- formatC(absolute.mrd, format = "E", digits = 2)
 absolute.ptv.formatted <- formatC(absolute.ptv, format = "E", digits = 2)
 absolute.ntv.formatted <- formatC(absolute.ntv, format = "E", digits = 2)
@@ -467,7 +470,7 @@ if (params$runType == "absolute") {
 		mrd.ptv <- (ptv/fu.cell.concentration)/dx.baseline
 		mrd.ntv <- (ntv/fu.cell.concentration)/dx.baseline
 
-		dx.baseline.formatted <- sprintf("%#.3f", dx.baseline)
+		dx.baseline.formatted <- sprintf("%.0f%%", dx.baseline * 100) 
 		relative.mrd.formatted <- formatC(relative.mrd, format = "E", digits = 2)
 
 		mrd.ntv.formatted <- formatC(mrd.ntv, format = "E", digits = 2)
@@ -492,11 +495,16 @@ if (params$runType == "absolute") {
 
 					   absolute.ptv.formatted, 
 					   absolute.ntv.formatted, 
+
+					   "", 
 			           
 					   dx.baseline.formatted, 
 					   background.level.formatted, 
 
 					   total.cell.no, 
+
+					   "", 
+
 					   relative.mrd.formatted, 
 					    
 
@@ -511,11 +519,16 @@ if (params$runType == "absolute") {
 
 		                              "Absolute PTV", 
 		                              "Absolute NTV", 
+
+		                              "", 
 			                         
 		                              "Tumour load", 
 		                              "MNC Baseline", 
 
-		                              "Total Cell Numbers", 
+		                              "Total Assessable Cell Numbers", 
+
+		                              "", 
+
 		                              "MRD", 
 		                              
 
