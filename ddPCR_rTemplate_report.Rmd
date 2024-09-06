@@ -522,7 +522,7 @@ if (params$runType == "absolute") {
 
 		                              "", 
 			                         
-		                              "Tumour load", 
+		                              "Dx Baseline", 
 		                              "MNC Baseline", 
 
 		                              "Total Assessable Cell Numbers", 
